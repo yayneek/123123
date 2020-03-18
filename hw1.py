@@ -1,6 +1,8 @@
 from typing import List
 
-import pandas as pd
+import numpy as np
+import pandas as pd	
+import datetime
 
 CONFIRMED_CASES_URL = f"https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data" \
                       f"/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv "
@@ -27,9 +29,9 @@ def poland_cases_by_date(day: int, month: int, year: int = 2020) -> int:
     :param month: Month to get the cases for as an integer indexed from 1
     :return: Number of cases on a given date as an integer
     """
-    
-    # Your code goes here (remove pass)
-    pass
+    date = f'{month}/{day}/{20}'
+    pl = confirmed_cases.loc[confirmed_cases["Country/Region"] == "Poland", date]
+    return int(pl)
 
 
 def top5_countries_by_date(day: int, month: int, year: int = 2020) -> List[str]:
@@ -49,9 +51,11 @@ def top5_countries_by_date(day: int, month: int, year: int = 2020) -> List[str]:
     """
 
     # Your code goes here (remove pass)
-    pass
+    date = f'{month}/{day}/{20}'
+    return [(confirmed_cases.groupby("Country/Region").sum().sort_values(by = date, ascending = False).head(5).index[0]),(confirmed_cases.groupby("Country/Region").sum().sort_values(by = date, ascending = False).head(5).index[1]),(confirmed_cases.groupby("Country/Region").sum().sort_values(by = date, ascending = False).head(5).index[2]),(confirmed_cases.groupby("Country/Region").sum().sort_values(by = date, ascending = False).head(5).index[3]),(confirmed_cases.groupby("Country/Region").sum().sort_values(by = date, ascending = False).head(5).index[4])] 
+    
 
-# Function name is wrong, read the pydoc
+# Wrong function name, read the pydoc
 def no_new_cases_count(day: int, month: int, year: int = 2020) -> int:
     """
     Returns the number of countries/regions where the infection count in a given day
@@ -70,4 +74,11 @@ def no_new_cases_count(day: int, month: int, year: int = 2020) -> int:
     """
     
     # Your code goes here (remove pass)
-    pass
+    str_date = str(month) + "/"+str(day) + "/" + str(year % 2000)
+    date_given = datetime.datetime.strptime(str_date, '%m/%d/%y')
+    date_previous = date_given - datetime.timedelta(days=1)
+    str_date_given = str(date_given.month) + "/"+str(date_given.day) + "/" + str(date_given.year - 2000)
+    str_date_previous = str(date_previous.month) + "/"+str(date_previous.day) + "/" + str(date_previous.year - 2000)
+    good_countries = confirmed_cases.loc[confirmed_cases[str_date_given]!=confirmed_cases[str_date_previous]]
+    return good_countries.shape[0]
+ 
